@@ -105,3 +105,169 @@ Functions in controllers that a template retrieves data from must set the data i
 
 That's because the data is initialized lazily in the template and it works well with xhr data too, since you can bind the data in the xhr callback.
 
+Now your application is ready and all that's left is extending it!
+
+## n-*
+
+### n-data-source
+
+n-data-source is used to specify a data-source for a parent element. This element will pass its data down to its children.
+
+n-data-source can be followed by n-data-type and/or n-if. If no n-data-type is specified, then the data-type is assumed to be a controller. n-if will only work with foreach and model data-types when it comes to data-sources.
+
+Syntax:
+```
+<tag n-data-source="">
+  ...
+</tag>
+```
+
+Examples:
+
+```
+<!-- getMenu: [{ link: '/', text: 'Home' }, { link: '/news', text: 'News' }, { link: '/contact', text: 'Contact' }] -->
+
+<div n-data-source="getMenu">
+  <a n-attr="href:link" n-data="text"></a>
+</div>
+
+...
+
+<a href="/">Home</a>
+<a href="/news">News</a>
+<a href="/contact">Contact</a>
+```
+
+```
+<!-- getModel: { name: 'Johnny' } -->
+
+<div n-data-source="getModel" n-data-type="model" n-if="model|model.name !== 'Bob'">
+  <h3 n-data="name"></h3>
+</div>
+
+...
+
+<h3>Johnny</h3>
+
+```
+
+```
+<div n-data-source="[{name:'John'},{name:'Sarah'}]" n-data-type="foreach">
+  <h3 n-data="name"></h3>
+</div>
+
+...
+
+<h3>John</h3>
+<h3>Sarah</h3>
+```
+
+### n-data
+
+n-data is used to take data from a parent's model. This can be used by all nested child elements.
+
+Syntax:
+
+```
+<tag n-data=""></tag>
+```
+
+Example:
+
+```
+<p n-data="message"></p>
+```
+
+### n-attr
+
+n-attr is used to set an attribute from a model's property. This can be used by all nested child elements.
+
+Syntax:
+
+```
+<tag n-attr="attributeName:modelProperty"></tag>
+```
+
+Example:
+
+```
+<a n-attr="href:link"></a>
+```
+
+### n-if
+
+n-if is used to only render data for an element if a specific condition is met. The condition can use the parent's model.
+
+Syntax:
+
+```
+<tag n-if="modelAlias|conditionalExpression"></tag>
+```
+
+Example:
+
+```
+<h3 n-data="name" n-if="building|building.name && building.name.length"></h3>
+```
+
+## Responsive
+
+Other than dynamic data rendering then nyanjs can also do complex responsive designs.
+
+### Responsive Binding
+
+Nyanjs can do responsive binding using the **n-resp** and **n-resp-bind** attributes.
+
+The **n-resp** attribute must include the sizes in which the element will display content.
+
+The **n-resp-bind** attribute must include a name which it should bind against.
+
+The binding is against other elements with same name, but different **n-resp** values.
+
+All values in the **n-resp** attribute are comma separated.
+
+These are the following sizes available:
+
+* xs (Extra Small)
+* sm (Small)
+* md (Medium)
+* lg (Large)
+
+If you're familiar with Bootstrap, then you should be familiar with those sizes. Caution: Nyanjs does not render the exact same sizes, but close to! That is a design choice!
+
+Example:
+
+```
+  <div n-resp="xs,sm" n-resp-bind="responsiveBox" style="background-color: red;">
+    <p>Hello</p>
+  </div>
+  <div n-resp="md,lg" n-resp-bind="responsiveBox" style="background-color: blue;"></div>
+```
+
+When the page is displayed with **xs,sm** then **Hello** has a red background, but when the page is displayed with **md,lg** then **Hello** has a blue background.
+
+The binding works by moving the child content between the elements to their respective responsive size.
+
+This is useful when you have boxes at different locations depending on sizes, but displaying same content.
+
+It can be used to eliminate double-data!
+
+### CSS
+
+Other than responsive binding then nyanjs also provides a minimal css file that can be used to create grids and responsive element visibility.
+
+Using **n-row** you can specify a row for a grid.
+
+Using **n-col-X** where X is the amount of percentage the column should take. Each column represents 10% in nyanjs.
+
+The range is **n-col-1** to **n-col-10**.
+
+All elements using **n-col-X** must specify the **n-col** class too.
+
+Using **n-width-X** you can specify an addition percentage value a column should take.
+
+The possible values for **n-width-X** are the following: **10, 20, 25, 33, 40, 50**
+
+You can show elements based on a responsive size using **n-visible-SIZE** where SIZE is the responsive size (xs, sm, md or lg)
+
+You can hide elements based on a responsive size using **n-hidden-SIZE**
