@@ -210,6 +210,26 @@ Example:
 <h3 n-data="name" n-if="building|building.name && building.name.length"></h3>
 ```
 
+### n-events
+
+n-events is used to specify events that an element can be bound to. These events must be functions located in the current controller.
+
+Syntax:
+
+```
+<tag n-events="eventName:eventFun"></tag>
+```
+
+```
+<tag n-events="eventName:eventFun|eventName2:eventFun2"></tag>
+```
+
+Example:
+
+```
+<a href="#" n-events="click:onClick">Click Me</a>
+```
+
 ## Responsive
 
 Other than dynamic data rendering then nyanjs can also do complex responsive designs.
