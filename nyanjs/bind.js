@@ -121,7 +121,7 @@ nyan.extend('nyan', {
 
           var ghostData = element.getAttribute('n-ghost');
 
-          if (ghostData && model) {
+          if (ghostData === '' && model) {
             source = model[source];
           }
 
@@ -156,7 +156,7 @@ nyan.extend('nyan', {
 
           var ghostData = element.getAttribute('n-ghost');
 
-          if (ghostData && model) {
+          if (ghostData === '' && model) {
             source = model[source];
           }
 
