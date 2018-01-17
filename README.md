@@ -245,7 +245,7 @@ Syntax:
 Example:
 
 ```
-<div n-data-source="nestedArray" n-data-type="foreach" n-ghost">
+<div n-data-source="nestedArray" n-data-type="foreach" n-ghost>
   <p n-inline></p>
 </div>
 ```
