@@ -4,6 +4,7 @@ nyan.config = {
     '/nyanjs/define.js',
     '/nyanjs/clone.js',
     '/nyanjs/bind.js',
+    '/nyanjs/resp.js',
     '/nyanjs/views.js',
     '/nyanjs/events.js',
     '/nyanjs/ajax.js',

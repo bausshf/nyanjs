@@ -1,11 +1,11 @@
 nyan.extend('nyan', {
   name: 'setView',
 
-  impl: function(viewContainer, viewName) {
+  impl: function(viewContainer, viewName, model, internal) {
     var useWholePage = !viewContainer && !viewName,
         viewTag = !useWholePage ? document.getElementById(viewContainer) : document.body;
 
-    if (!viewTag || !viewTag.tagName === 'view') {
+    if (!viewTag || !viewTag.tagName.toLowerCase() === 'view') {
       return;
     }
 
@@ -28,7 +28,15 @@ nyan.extend('nyan', {
 
     viewTag.style.visibility = 'hidden';
 
-    this.bind(viewTag, null, viewController);
+    if (viewController) {
+      var dataBind = viewTag.getAttribute('n-data-bind');
+
+      if (dataBind) {
+        viewController[dataBind] = model;
+      }
+    }
+
+    this.bind(viewTag, model || null, viewController, internal);
 
     viewTag.style.visibility = 'visible';
 
@@ -80,14 +88,11 @@ nyan.extend('nyan', {
           respData.md.innerHTML = '';
           respData.lg.innerHTML = '';
 
-          if (width > 994) { // lg
-            respData.lg.innerHTML = respData.innerHTML;
-          } else if (width > 780) { // md
-            respData.md.innerHTML = respData.innerHTML;
-          } else if (width > 564) { // sm
-            respData.sm.innerHTML = respData.innerHTML;
-          } else { // xs
-            respData.xs.innerHTML = respData.innerHTML;
+          switch (this.getResp()) {
+            case 'lg': respData.lg.innerHTML = respData.innerHTML; break;
+            case 'md': respData.md.innerHTML = respData.innerHTML; break;
+            case 'sm': respData.sm.innerHTML = respData.innerHTML; break;
+            case 'xs': respData.xs.innerHTML = respData.innerHTML; break;
           }
         }
       };

@@ -127,23 +127,33 @@ nyan = {
 
     me.loadFiles(['/nyanjs/config.js'], function() {
       me.loadFiles(nyan.config.files, function() {
-        me.loadFiles([window.appPath || '/app/app.js'], function() {
-          me.loadFiles(me.app.config.files, function() {
-            me.initializeApp();
+        function loadAppFiles() {
+          me.loadFiles([window.appPath || '/app/app.js'], function() {
+            me.loadFiles(me.app.config.files, function() {
+              me.initializeApp();
 
-            if (me.app) {
-              me.app.events.fire('load');
-            } else {
-              console.error('Failed to load app.');
-            }
+              if (me.app) {
+                me.app.events.fire('load');
+              } else {
+                console.error('Failed to load app.');
+              }
 
-            if (location.hash && location.hash.length >= 2) {
-              nyan.Routing.navigateTo(location.hash.substring(1, location.hash.length));
-            } else if (me.app.config.appView && me.app.config.mainView) {
-              me.setView(me.app.config.appView, me.app.config.mainView);
-            }
+              if (location.hash && location.hash.length >= 2) {
+                nyan.Routing.navigateTo(location.hash.substring(1, location.hash.length));
+              } else if (me.app.config.appView && me.app.config.mainView) {
+                me.setView(me.app.config.appView, me.app.config.mainView);
+              }
+            });
           });
-        });
+        }
+
+        if (window.nyanui) {
+          me.loadFiles(window.nyanui.config.files, function() {
+            loadAppFiles();
+          });
+        } else {
+          loadAppFiles();
+        }
       });
     });
   },

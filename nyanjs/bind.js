@@ -1,10 +1,70 @@
 nyan.extend('nyan', {
   name: 'bind',
 
-  impl: function(element, model, viewController) {
+  impl: function(element, model, viewController, internal) {
+    if (!element) {
+      return;
+    }
+    
     var me = this;
 
     element.rebindElement = function() { me.bind(element, model, viewController); };
+
+    if (element.id && element.tagName.toLowerCase() === 'view' && !internal) {
+      var viewName = element.getAttribute('n-view');
+
+      if (viewName) {
+        var data = element.getAttribute('n-data'),
+            attr = element.getAttribute('n-attr'),
+            ifCondition = (element.getAttribute('n-if') || ''),
+            hasIf = ifCondition.length,
+            ifIndex = ifCondition.indexOf('|'),
+            dataIsModel;
+
+        if (!model) {
+          eval('model = ' + data);
+          dataIsModel = true;
+        }
+
+        ifCondition = ifIndex > 0 ? [ifCondition.substring(0,ifIndex), ifCondition.substring(ifIndex + 1, ifCondition.length)] : undefined;
+
+        if (hasIf) {
+          if (!ifCondition || ifCondition.length !== 2) {
+            return;
+          }
+
+          eval('var ' + ifCondition[0] + ' = model;');
+          eval('var success = ' + ifCondition[1] + ';');
+
+          if (!success) {
+            return;
+          }
+        }
+
+        if (attr && model) {
+          var attributeEntries = attr.split('|');
+
+          for (var i = 0; i < attributeEntries.length; i++) {
+            var attributeEntry = attributeEntries[i].split(':');
+
+            if (attributeEntry.length == 2) {
+              var value = model[attributeEntry[1]];
+
+              if (value) {
+                element.setAttribute(attributeEntry[0], value);
+              }
+            }
+          }
+        }
+
+        if (dataIsModel) {
+          this.setView(element.id, viewName, model, true);
+        } else {
+          this.setView(element.id, viewName, model ? model[data] : null, true);
+        }
+        return;
+      }
+    }
 
     if (viewController) {
       var events = element.getAttribute('n-events');
@@ -57,6 +117,12 @@ nyan.extend('nyan', {
           element.templateHTML = element.templateHTML || element.innerHTML;
           element.innerHTML = '';
 
+          var dataRef = element.getAttribute('n-data-ref');
+
+          if (dataRef && model) {
+            source = model[source];
+          }
+
           eval('var __ndata = ' + source);
 
           if (__ndata && __ndata.length) {
@@ -73,6 +139,12 @@ nyan.extend('nyan', {
         case 'if_foreach': {
           element.templateHTML = element.templateHTML || element.innerHTML;
           element.innerHTML = '';
+
+          var dataRef = element.getAttribute('n-data-ref');
+
+          if (dataRef && model) {
+            source = model[source];
+          }
 
           eval('var __ndata = ' + source);
 
@@ -92,8 +164,10 @@ nyan.extend('nyan', {
               var child;
               for (var i = 0; i < __ndata.length; i++) {
                 element.innerHTML += element.templateHTML;
+                var lastChild = Array.prototype.slice.call(element.querySelectorAll(nyan.config.tags));
+                lastChild = lastChild[lastChild.length - 1];
 
-                this.bind(element.children[element.children.length - 1], __ndata[i], viewController);
+                this.bind(lastChild, __ndata[i], viewController);
               }
             }
           }
@@ -144,7 +218,7 @@ nyan.extend('nyan', {
           if (call) {
             controller = this.getController[source];
           } else {
-            controller = viewConroller;
+            controller = viewController;
             call = source;
           }
 
@@ -154,7 +228,7 @@ nyan.extend('nyan', {
             if (call) {
               var me = this;
 
-              call(function(data) {
+              call.call(controller, function(data) {
                 if (data.length) {
                   element.templateHTML = element.templateHTML || element.innerHTML;
                   element.innerHTML = '';
@@ -162,8 +236,10 @@ nyan.extend('nyan', {
                   if (data && data.length) {
                     for (var i = 0; i < data.length; i++) {
                       element.innerHTML += element.templateHTML;
+                      var lastChild = Array.prototype.slice.call(element.querySelectorAll(nyan.config.tags));
+                      lastChild = lastChild[lastChild.length - 1];
 
-                      me.bind(element.children[element.children.length - 1], data[i], viewController);
+                      me.bind(lastChild, data[i], viewController);
                     }
                   }
                 } else {
@@ -181,7 +257,7 @@ nyan.extend('nyan', {
       }
     } else if (model) {
       var data = element.getAttribute('n-data'),
-          attr = element.getAttribute('n-attr');
+          attr = element.getAttribute('n-attr'),
           ifCondition = (element.getAttribute('n-if') || ''),
           hasIf = ifCondition.length,
           ifIndex = ifCondition.indexOf('|');
@@ -234,4 +310,4 @@ nyan.extend('nyan', {
       });
     }
   }
-})
+});
