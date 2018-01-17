@@ -3,6 +3,11 @@
   width: 100%;
 }
 
+.n-row::after {
+  content: "";
+  clear: both;
+}
+
 .n-col {
   float: left;
   height: 100%;
