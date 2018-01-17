@@ -76,8 +76,7 @@ nyan.extend('nyan', {
     if (!viewTag.__detachEvent) {
       viewTag.__detachEvent = function() {
         for (var prop in viewTag.__responsive) {
-          var respData = viewTag.__responsive[prop],
-              width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+          var respData = viewTag.__responsive[prop];
 
           if (!respData.xs && !respData.sm && !respData.md && !respData.lg) {
             continue;
@@ -88,7 +87,7 @@ nyan.extend('nyan', {
           respData.md.innerHTML = '';
           respData.lg.innerHTML = '';
 
-          switch (this.getResp()) {
+          switch (nyan.getResp()) {
             case 'lg': respData.lg.innerHTML = respData.innerHTML; break;
             case 'md': respData.md.innerHTML = respData.innerHTML; break;
             case 'sm': respData.sm.innerHTML = respData.innerHTML; break;

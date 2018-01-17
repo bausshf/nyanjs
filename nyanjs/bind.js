@@ -5,7 +5,7 @@ nyan.extend('nyan', {
     if (!element) {
       return;
     }
-    
+
     var me = this;
 
     element.rebindElement = function() { me.bind(element, model, viewController); };
@@ -101,6 +101,8 @@ nyan.extend('nyan', {
     if (source) {
       var type = element.getAttribute('n-data-type'),
           children = element.querySelectorAll(nyan.config.tags),
+          sort = element.getAttribute('n-sort'),
+          filter = element.getAttribute('n-filter'),
           ifCondition = (element.getAttribute('n-if') || '');
 
       if (ifCondition && ifCondition.length) {
@@ -117,15 +119,27 @@ nyan.extend('nyan', {
           element.templateHTML = element.templateHTML || element.innerHTML;
           element.innerHTML = '';
 
-          var dataRef = element.getAttribute('n-data-ref');
+          var ghostData = element.getAttribute('n-ghost');
 
-          if (dataRef && model) {
+          if (ghostData && model) {
             source = model[source];
           }
 
           eval('var __ndata = ' + source);
 
           if (__ndata && __ndata.length) {
+            if (sort || sort === '') {
+              if (sort.length) {
+                eval('__ndata.sort(function(a,b) { return ' + sort + '; });');
+              } else {
+                __ndata.sort();
+              }
+            }
+
+            if (filter && filter.length) {
+              eval('__ndata = __ndata.filter(function(value) { return ' + filter + '; });');
+            }
+
             var child;
             for (var i = 0; i < __ndata.length; i++) {
               element.innerHTML += element.templateHTML;
@@ -140,9 +154,9 @@ nyan.extend('nyan', {
           element.templateHTML = element.templateHTML || element.innerHTML;
           element.innerHTML = '';
 
-          var dataRef = element.getAttribute('n-data-ref');
+          var ghostData = element.getAttribute('n-ghost');
 
-          if (dataRef && model) {
+          if (ghostData && model) {
             source = model[source];
           }
 
@@ -161,6 +175,18 @@ nyan.extend('nyan', {
             eval('var success = ' + ifCondition[1] + ';');
 
             if (success) {
+              if (sort || sort === '') {
+                if (sort.length) {
+                  eval('__ndata.sort(function(a,b) { return ' + sort + '; });');
+                } else {
+                  __ndata.sort();
+                }
+              }
+
+              if (filter && filter.length) {
+                eval('__ndata = __ndata.filter(function(value) { return ' + filter + '; });');
+              }
+
               var child;
               for (var i = 0; i < __ndata.length; i++) {
                 element.innerHTML += element.templateHTML;
@@ -234,6 +260,18 @@ nyan.extend('nyan', {
                   element.innerHTML = '';
 
                   if (data && data.length) {
+                    if (sort || sort === '') {
+                      if (sort.length) {
+                        eval('data.sort(function(a,b) { return ' + sort + '; });');
+                      } else {
+                        data.sort();
+                      }
+                    }
+
+                    if (filter && filter.length) {
+                      eval('data = data.filter(function(value) { return ' + filter + '; });');
+                    }
+
                     for (var i = 0; i < data.length; i++) {
                       element.innerHTML += element.templateHTML;
                       var lastChild = Array.prototype.slice.call(element.querySelectorAll(nyan.config.tags));
@@ -257,6 +295,7 @@ nyan.extend('nyan', {
       }
     } else if (model) {
       var data = element.getAttribute('n-data'),
+          inlineData = element.getAttribute('n-inline'),
           attr = element.getAttribute('n-attr'),
           ifCondition = (element.getAttribute('n-if') || ''),
           hasIf = ifCondition.length,
@@ -293,17 +332,19 @@ nyan.extend('nyan', {
         }
       }
 
-      if (model[data]) {
+      if (inlineData || inlineData === '') {
+        element.innerHTML = model;
+      } else if (model[data]) {
         element.innerHTML = model[data];
       } else {
-        this.queryAllSelector(element, '[n-data-source],[n-data],[n-attr]', function(el) {
+        this.queryAllSelector(element, nyan.config.tags, function(el) {
           if (el !== element) {
             this.bind(el, model, viewController);
           }
         });
       }
     } else {
-      this.queryAllSelector(element, '[n-data-source],[n-data],[n-attr]', function(el) {
+      this.queryAllSelector(element, nyan.config.tags, function(el) {
         if (el !== element) {
           this.bind(el, model, viewController);
         }

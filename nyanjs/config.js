@@ -14,5 +14,5 @@ nyan.config = {
     '/nyanjs/init.js'
   ],
 
-  tags: '[n-data-source],[n-data],[n-attr],[n-if]'
+  tags: '[n-data-source],[n-data],[n-attr],[n-if],[n-inline]'
 };
