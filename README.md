@@ -230,6 +230,93 @@ Example:
 <a href="#" n-events="click:onClick">Click Me</a>
 ```
 
+### n-ghost
+
+n-ghost can be used to proxy a specific member of the passed model.
+
+n-data-source is used to specify the member to ghost.
+
+Syntax:
+
+```
+<tag n-ghost></tag>
+```
+
+Example:
+
+```
+<div n-data-source="nestedArray" n-data-type="foreach" n-ghost>
+  <p n-inline></p>
+</div>
+```
+### n-inline
+
+n-inline can be used to inline a model's data directly.
+
+Syntax:
+
+```
+<tag n-inline></tag>
+```
+
+Example:
+
+```
+<div n-data-source="[1,2,3,4,5]" n-data-type="foreach">
+  <p>
+    Number: <span n-inline></span>!
+  </p>
+</div>
+```
+
+### n-sort
+
+n-sort can be used to sort data. If no sorting expression is specified then it uses the default **array.prototype.sort** function.
+
+The sorting expression can use **a** and **b** for sorting.
+
+Syntax:
+
+```
+<tag n-sort></tag>
+```
+
+```
+<tag n-sort="expression"></tag>
+```
+
+Example:
+
+```
+<div n-data-source="[1,2,3,4,5]" n-data-type="foreach" n-sort="a < b">
+  <p>
+    Number: <span n-inline></span>!
+  </p>
+</div>
+```
+
+### n-filter
+
+n-filter can be used to filter elements based on a conditional expression.
+
+The expression can use **value** to create the filter expression.
+
+Syntax:
+
+```
+<tag n-filter="expression"></tag>
+```
+
+Example:
+
+```
+<div n-data-source="[1,2,3,4,5]" n-data-type="foreach" n-filter="value >= 3">
+  <p>
+    Number: <span n-inline></span>!
+  </p>
+</div>
+```
+
 ## Responsive
 
 Other than dynamic data rendering then nyanjs can also do complex responsive designs.
