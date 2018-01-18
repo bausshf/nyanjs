@@ -3,16 +3,19 @@ nyan.extend('nyan', {
 
   impl: function(viewContainer, viewName, model, internal) {
     var useWholePage = !viewContainer && !viewName,
-        viewTag = !useWholePage ? document.getElementById(viewContainer) : document.body;
+        viewTag = !useWholePage ? document.getElementById(viewContainer) : document.body,
+        view;
 
-    if (!viewTag || !viewTag.tagName.toLowerCase() === 'view') {
-      return;
-    }
+    if (!useWholePage) {
+      if (!viewTag || !viewTag.tagName.toLowerCase() === 'view') {
+        return;
+      }
 
-    var view = this.views[viewName];
+      view = this.views[viewName];
 
-    if (!view && !useWholePage) {
-      return;
+      if (!view) {
+        return;
+      }  
     }
 
     var viewController = this.getController(viewTag.getAttribute('n-controller')) || this.getViewController(viewName) || this.getViewController(this.app.defaultViewController);
