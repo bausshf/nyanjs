@@ -50,8 +50,11 @@ nyan = {
     return xhr;
   },
 
-  loadFiles: function(files, callback, ignoreErrors) {
+  loadFiles: function(files, callback, ignoreErrors, callbackOnEmpty) {
     if (!files || !files.length) {
+      if (callbackOnEmpty && callback) {
+        callback();
+      }
       return;
     }
 
@@ -143,7 +146,7 @@ nyan = {
               } else if (me.app.config.appView && me.app.config.mainView) {
                 me.setView(me.app.config.appView, me.app.config.mainView);
               }
-            });
+            }, false, true);
           });
         }
 
